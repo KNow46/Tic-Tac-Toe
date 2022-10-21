@@ -1,1 +1,2 @@
 C:\Users\Krzysztof\Desktop\tic-toe\Debug\tic-toe.exe
+C:\Users\Krzysztof\Desktop\tic-tac-toe\Debug\tic-toe.exe
