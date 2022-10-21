@@ -50,21 +50,23 @@ public:
 	void printboard()
 	{
 		system("CLS");
-		
+		SetConsoleTextAttribute(hConsole, 3);
 		cout << "+---------+\n";
 		for (int i = 0; i < 9; i++)
 		{
-			SetConsoleTextAttribute(hConsole, 1);
+			SetConsoleTextAttribute(hConsole, 3);
 			if (i == 0 || i == 3 || i == 6)
 				cout << "|";
-			SetConsoleTextAttribute(hConsole, 4);
+			SetConsoleTextAttribute(hConsole, 7);
 			if (squares[i].getOwner() == "none")
 				cout << " "<<i<<" ";
+			SetConsoleTextAttribute(hConsole, 9);
 			if (squares[i].getOwner() == "O")
 				cout << " O ";
+			SetConsoleTextAttribute(hConsole, 12);
 			if (squares[i].getOwner() == "X")
 				cout << " X ";
-			SetConsoleTextAttribute(hConsole, 1);
+			SetConsoleTextAttribute(hConsole, 3);
 			if (i == 2 || i == 5 || i == 8)
 				cout << "|\n";
 			
