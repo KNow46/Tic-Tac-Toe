@@ -28,6 +28,7 @@ public:
 class board
 {
 public:
+	string playerTurn;
 	square squares[9];
 	board() : squares()
 	{}
@@ -73,10 +74,8 @@ public:
 		}
 		cout << "+---------+\n";
 	}
-	~board()
-	{
-		//delete [] squares;
-	}
+	void put
+	
 
 };
 
