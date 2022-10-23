@@ -172,6 +172,7 @@ int main()
 	
 	while (tab.putChar() == "none")
 	{
+		//EMPTY BODY
 	}
 	tab.printboard();
 	if (tab.draw != true)
