@@ -5,11 +5,11 @@
 
 using namespace std;
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-const int squaresCount = 9;
+const int numberOfSquares = 9;
 
 class Square
 {
-private: 
+private:
 	string owner;
 public:
 	Square()
@@ -29,8 +29,8 @@ public:
 class Board
 {
 private:
-	int availablePlaces[squaresCount];
-	Square squares[squaresCount];
+	int availablePlaces[numberOfSquares];
+	Square squares[numberOfSquares];
 	string playerTurn;
 	bool draw;
 public:
@@ -39,13 +39,13 @@ public:
 	{
 		draw = false;
 		playerTurn = "X";
-		for (int i = 0; i < squaresCount; i++)
+		for (int i = 0; i < numberOfSquares; i++)
 		{
 			availablePlaces[i] = i;
 		}
-		
+
 	}
-	string iswinner() 
+	string iswinner()
 	{
 		//winning conditions horrizontaly
 		if (squares[0].getOwner() == squares[1].getOwner() && squares[1].getOwner() == squares[2].getOwner())
@@ -74,14 +74,14 @@ public:
 		system("CLS");
 		SetConsoleTextAttribute(hConsole, 3);
 		cout << "+---------+\n";
-		for (int i = 0; i < squaresCount; i++)
+		for (int i = 0; i < numberOfSquares; i++)
 		{
 			SetConsoleTextAttribute(hConsole, 3);
 			if (i == 0 || i == 3 || i == 6)
 				cout << "|";
 			SetConsoleTextAttribute(hConsole, 7);
 			if (squares[i].getOwner() == "none")
-				cout << " "<<i<<" ";
+				cout << " " << i << " ";
 			SetConsoleTextAttribute(hConsole, 9);
 			if (squares[i].getOwner() == "O")
 				cout << " O ";
@@ -91,7 +91,7 @@ public:
 			SetConsoleTextAttribute(hConsole, 3);
 			if (i == 2 || i == 5 || i == 8)
 				cout << "|\n";
-			
+
 		}
 		cout << "+---------+\n";
 	}
@@ -100,7 +100,7 @@ public:
 		int choice;
 		bool wrongChoice = true;
 		bool isdraw = true;
-		for (int i = 0; i < squaresCount; i++)
+		for (int i = 0; i < numberOfSquares; i++)
 		{
 			if (availablePlaces[i] != -1)
 				isdraw = false;
@@ -115,7 +115,7 @@ public:
 			printboard();
 
 			cout << "Choose a square(";
-			for (int i = 0; i < squaresCount; i++)
+			for (int i = 0; i < numberOfSquares; i++)
 			{
 				if (availablePlaces[i] != -1 && i != 8)
 					cout << i << ", ";
@@ -131,7 +131,7 @@ public:
 				while (getchar() != '\n')
 					;
 				printboard();
-				for (int i = 0; i < squaresCount; i++)
+				for (int i = 0; i < numberOfSquares; i++)
 				{
 					if (availablePlaces[i] != -1 && i != 8)
 						cout << i << ", ";
@@ -141,7 +141,7 @@ public:
 				cout << "): ";
 			}
 
-			for (int i = 0; i < squaresCount; i++)
+			for (int i = 0; i < numberOfSquares; i++)
 			{
 				if (choice == availablePlaces[i])
 					wrongChoice = false;
@@ -152,7 +152,7 @@ public:
 				Sleep(2000);
 			}
 			else
-			availablePlaces[choice] = -1;
+				availablePlaces[choice] = -1;
 		} while (wrongChoice == true);
 		squares[choice].setOwner(playerTurn);
 		if (playerTurn == "O")
@@ -182,7 +182,7 @@ public:
 int main()
 {
 	Board tab;
-	
+
 	while (tab.putChar() == "none")
 	{
 		//EMPTY BODY
