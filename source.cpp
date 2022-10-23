@@ -5,13 +5,14 @@
 
 using namespace std;
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+const int squaresCount = 9;
 
-class square
+class Square
 {
 private: 
 	string owner;
 public:
-	square()
+	Square()
 	{
 		owner = "none";
 	}
@@ -25,19 +26,20 @@ public:
 	}
 };
 
-class board
+class Board
 {
 private:
-	int availablePlaces[9];
-public:
-	bool draw;
+	int availablePlaces[squaresCount];
+	Square squares[squaresCount];
 	string playerTurn;
-	square squares[9];
-	board() : squares()
+	bool draw;
+public:
+
+	Board() : squares()
 	{
 		draw = false;
 		playerTurn = "X";
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < squaresCount; i++)
 		{
 			availablePlaces[i] = i;
 		}
@@ -72,7 +74,7 @@ public:
 		system("CLS");
 		SetConsoleTextAttribute(hConsole, 3);
 		cout << "+---------+\n";
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < squaresCount; i++)
 		{
 			SetConsoleTextAttribute(hConsole, 3);
 			if (i == 0 || i == 3 || i == 6)
@@ -98,7 +100,7 @@ public:
 		int choice;
 		bool wrongChoice = true;
 		bool isdraw = true;
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < squaresCount; i++)
 		{
 			if (availablePlaces[i] != -1)
 				isdraw = false;
@@ -113,7 +115,7 @@ public:
 			printboard();
 
 			cout << "Choose a square(";
-			for (int i = 0; i < 9; i++)
+			for (int i = 0; i < squaresCount; i++)
 			{
 				if (availablePlaces[i] != -1 && i != 8)
 					cout << i << ", ";
@@ -129,7 +131,7 @@ public:
 				while (getchar() != '\n')
 					;
 				printboard();
-				for (int i = 0; i < 9; i++)
+				for (int i = 0; i < squaresCount; i++)
 				{
 					if (availablePlaces[i] != -1 && i != 8)
 						cout << i << ", ";
@@ -139,7 +141,7 @@ public:
 				cout << "): ";
 			}
 
-			for (int i = 0; i < 9; i++)
+			for (int i = 0; i < squaresCount; i++)
 			{
 				if (choice == availablePlaces[i])
 					wrongChoice = false;
@@ -160,7 +162,18 @@ public:
 		return iswinner();
 
 	}
-	
+	string getPlayerTurn()
+	{
+		return playerTurn;
+	}
+	bool isDraw()
+	{
+		return draw;
+	}
+	void setPlayerTurn(string playerName)
+	{
+		playerTurn = playerName;
+	}
 
 };
 
@@ -168,20 +181,20 @@ public:
 
 int main()
 {
-	board tab;
+	Board tab;
 	
 	while (tab.putChar() == "none")
 	{
 		//EMPTY BODY
 	}
 	tab.printboard();
-	if (tab.draw != true)
+	if (tab.isDraw() != true)
 	{
-		if (tab.playerTurn == "O")
-			tab.playerTurn = "X";
+		if (tab.getPlayerTurn() == "O")
+			tab.setPlayerTurn("X");
 		else
-			tab.playerTurn = "O";
-		cout << endl << "Player " << tab.playerTurn << " won game";
+			tab.setPlayerTurn("O");
+		cout << endl << "Player " << tab.getPlayerTurn() << " won the game";
 	}
 	else
 		cout << endl << "DRAW";
