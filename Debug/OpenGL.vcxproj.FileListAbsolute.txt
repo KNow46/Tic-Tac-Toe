@@ -1,0 +1,4 @@
+C:\Users\Krzysztof\source\repos\OpenGL\Debug\OpenGL.exe
+C:\Users\Krzysztof\Desktop\arkanoidbackup\Debug\OpenGL.exe
+C:\Users\Krzysztof\source\repos\arkanoidbackup\Debug\Arkanoid.exe
+C:\Users\Krzysztof\source\repos\tic-tac-toe\Debug\Arkanoid.exe
