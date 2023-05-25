@@ -61,35 +61,46 @@ void rendererScene(std::vector<InterfaceObject*>sceneObjects, Renderer& renderer
     }	
 }
 
-
-void clearDestroyed(std::vector <GameObject*>& allSceneObjects)
+Symbol checkWin(const std::vector<Cell*>& cells)
 {
-    std::vector<GameObject*> newAllSceneObjects;
-
-    for(int i = allSceneObjects.size(); i > 0; i--)
+    for (int i = 0; i < 3; ++i)
     {
-        if (allSceneObjects[i-1]->getIsDestroyed() == false)
+        if (cells[i * 3]->getSymbol() == cells[i * 3 + 1]->getSymbol() &&
+            cells[i * 3]->getSymbol() == cells[i * 3 + 2]->getSymbol() &&
+            cells[i * 3]->getSymbol() != Symbol::Empty)
         {
-            newAllSceneObjects.push_back(allSceneObjects[i-1]);
+            return cells[i * 3]->getSymbol();
         }
     }
-    for (int i = allSceneObjects.size(); i > 0; i--)
-    {
-        allSceneObjects.pop_back();
-    }
-    for (int i = newAllSceneObjects.size(); i > 0; i--)
-    {
-        allSceneObjects.push_back(newAllSceneObjects[i-1]);
-    }
-  
-}
 
+    for (int i = 0; i < 3; ++i)
+    {
+        if (cells[i]->getSymbol() == cells[i + 3]->getSymbol() &&
+            cells[i]->getSymbol() == cells[i + 6]->getSymbol() &&
+            cells[i]->getSymbol() != Symbol::Empty)
+        {
+            return cells[i]->getSymbol();
+        }
+    }
+
+    if ((cells[0]->getSymbol() == cells[4]->getSymbol() &&
+        cells[0]->getSymbol() == cells[8]->getSymbol() &&
+        cells[0]->getSymbol() != Symbol::Empty) ||
+        (cells[2]->getSymbol() == cells[4]->getSymbol() &&
+            cells[2]->getSymbol() == cells[6]->getSymbol() &&
+            cells[2]->getSymbol() != Symbol::Empty))
+    {
+        return cells[4]->getSymbol();
+    }
+
+    return Symbol::Empty;
+}
 
 struct UserData
 {
     std::vector<InterfaceObject*>* allInterfaceObjects;
-
-    UserData(std::vector<InterfaceObject*>* objects) : allInterfaceObjects(objects) {}
+    std::vector<Cell*>* cells;
+    UserData(std::vector<InterfaceObject*>* objects, std::vector<Cell*>* cells) : allInterfaceObjects(objects), cells(cells) {}
 };
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -113,28 +124,33 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                     }
                 }       
             }
-            
+       
         }
+       
        
     }
 }
-
-
-void hoverInterfaceObjects(int x, int y, std::vector<InterfaceObject*>& allInterfaceObjects)
+void generateCells(std::vector<Cell*>& cells, std::vector<InterfaceObject*>& allInterfaceObjects, Symbol& whoseTurn)
 {
-    
-    for (int i = 0; i < allInterfaceObjects.size(); i++)
+    for (int i = 0; i < 3; i++)
     {
-        if (x > allInterfaceObjects[i]->getX() && x < allInterfaceObjects[i]->getX() + allInterfaceObjects[i]->getWidth() && y > allInterfaceObjects[i]->getY() && y < allInterfaceObjects[i]->getY() + allInterfaceObjects[i]->getHeight())
-        {
-            allInterfaceObjects[i]->setIsHovered(true);
-        }
-        else
-        {
-            allInterfaceObjects[i]->setIsHovered(false);
-        }
+        cells.push_back(new Cell(i * windowWidth / 3, 0, windowWidth / 3, windowHeight / 3, whoseTurn));
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        cells.push_back(new Cell(i * windowWidth / 3, windowHeight / 3, windowWidth / 3, windowHeight / 3, whoseTurn));
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        cells.push_back(new Cell(i * windowWidth / 3, windowHeight / 3 * 2, windowWidth / 3, windowHeight / 3, whoseTurn));
+    }
+    for (int i = 0; i < 9; i++)
+    {
+        allInterfaceObjects.push_back(cells[i]);
     }
 }
+
+
 int main(void)
 {
 
@@ -194,10 +210,6 @@ int main(void)
 
         std::vector<InterfaceObject*> allInterfaceObjects;
 
-        UserData userData(&allInterfaceObjects);
-        
-
-        glfwSetWindowUserPointer(window, &userData);
 
 
         glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -208,47 +220,71 @@ int main(void)
 
         std::vector<Cell*> cells;
 
-        for(int i = 0; i < 3; i++)
-        {
-            cells.push_back(new Cell(0, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
-        }
-        for (int i = 0; i < 3; i++)
-        {
-            cells.push_back(new Cell(windowWidth / 3, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
-        }
-        for (int i = 0; i < 3; i++)
-        {
-            cells.push_back(new Cell(windowWidth * 2 / 3, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
-        }
+        generateCells(cells, allInterfaceObjects, whoseTurn);
 
-        for (int i = 0; i < 9; i++)
-        {
-            allInterfaceObjects.push_back(cells[i]);
-        }
+        UserData userData(&allInterfaceObjects, &cells);
+
+
+        glfwSetWindowUserPointer(window, &userData);
  
+        int waitCounter = 0;
+        bool isGameOver = false;
+
+        
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
+            bool areAllCellsBlocked = true;
+            for (int i = 0; i < 9; i++)
+            {
+                if (cells[i]->getSymbol() == Symbol::Empty)
+                {
+                    areAllCellsBlocked = false;
+                }
+            }
+            if (isGameOver == false)
+            {
+                if (checkWin(cells) == Symbol::Circle)
+                {
+                    isGameOver = true;
+                    std::cout << "zzz";
+                }
+                else if (checkWin(cells) == Symbol::Cross)
+                {
+                    isGameOver = true;
+                    std::cout << "aaaa";
+                }
+                else if (areAllCellsBlocked)
+                {
+                    isGameOver = true;
+                    std::cout << "iii";
+                }
 
                 glfwGetCursorPos(window, &xpos, &ypos);
-   
-                
-                hoverInterfaceObjects(xpos, ypos, allInterfaceObjects);
-               
+
                 renderer.Clear();
-              
-   
+
                 rendererScene(allInterfaceObjects, renderer, shader, va, vb, layout, ib, window);
 
+                /* Poll for and process events */
+                GLCall(glfwPollEvents());
+            }
+            else
+            {
+                waitCounter++;
+                if (waitCounter > 300)
+                {
+                    isGameOver = false;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        cells[i]->setSymbol(Symbol::Empty);
+                    }
+                    waitCounter = 0;
+                }
+            }
+            /* Swap front and back buffers */
+            GLCall(glfwSwapBuffers(window));
 
-
-                /* Swap front and back buffers */
-                GLCall(glfwSwapBuffers(window));
-            
-
-
-            /* Poll for and process events */
-            GLCall(glfwPollEvents());
         }
     glfwTerminate();
     return 0;
