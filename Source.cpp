@@ -120,7 +120,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                     if (ypos > (*userData->allInterfaceObjects)[i]->getY() && ypos < (*userData->allInterfaceObjects)[i]->getY() + (*userData->allInterfaceObjects)[i]->getHeight())
                     {
                         (*userData->allInterfaceObjects)[i]->onClick();
-                        break;
+                        //break;
                     }
                 }       
             }
@@ -210,7 +210,7 @@ int main(void)
 
         std::vector<InterfaceObject*> allInterfaceObjects;
 
-
+        allInterfaceObjects.push_back(new Image(0, 0, windowWidth, windowWidth, "res/textures/board.png"));
 
         glfwSetMouseButtonCallback(window, mouse_button_callback);
 
@@ -222,6 +222,7 @@ int main(void)
 
         generateCells(cells, allInterfaceObjects, whoseTurn);
 
+
         UserData userData(&allInterfaceObjects, &cells);
 
 
@@ -231,6 +232,9 @@ int main(void)
         bool isGameOver = false;
 
         
+        Image* winXscreen = new Image(windowWidth/3, windowHeight/3, windowWidth / 3, windowHeight / 3, "res/textures/xWon.png");
+        Image* winOscreen = new Image(windowWidth / 3, windowHeight / 3, windowWidth / 3, windowHeight / 3, "res/textures/oWon.png");
+        Image* drawScreen = new Image(windowWidth / 3, windowHeight / 3, windowWidth / 3, windowHeight / 3, "res/textures/draw.png");
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -247,41 +251,54 @@ int main(void)
                 if (checkWin(cells) == Symbol::Circle)
                 {
                     isGameOver = true;
-                    std::cout << "zzz";
+                    allInterfaceObjects.push_back(winOscreen);
                 }
                 else if (checkWin(cells) == Symbol::Cross)
                 {
                     isGameOver = true;
-                    std::cout << "aaaa";
+                    allInterfaceObjects.push_back(winXscreen);
                 }
                 else if (areAllCellsBlocked)
                 {
                     isGameOver = true;
-                    std::cout << "iii";
+                    allInterfaceObjects.push_back(drawScreen);
+                    
                 }
-
+                else
+                {
+                    /* Poll for and process events */
+                    GLCall(glfwPollEvents());
+                }
                 glfwGetCursorPos(window, &xpos, &ypos);
 
-                renderer.Clear();
-
-                rendererScene(allInterfaceObjects, renderer, shader, va, vb, layout, ib, window);
-
-                /* Poll for and process events */
-                GLCall(glfwPollEvents());
+                
             }
             else
             {
                 waitCounter++;
-                if (waitCounter > 300)
+                if (waitCounter > 120)
                 {
                     isGameOver = false;
-                    for (int i = 0; i < 9; i++)
+                    while (!cells.empty())
                     {
-                        cells[i]->setSymbol(Symbol::Empty);
+                        cells.pop_back();
                     }
+                    while (!allInterfaceObjects.empty())
+                    {
+                        delete allInterfaceObjects.back();
+                        allInterfaceObjects.pop_back();
+                    }
+                    winXscreen = new Image(200, 200, 250, 250, "res/textures/xWon.png");
+                    winOscreen = new Image(200, 200, 250, 250, "res/textures/oWon.png");
+                    drawScreen = new Image(200, 200, 250, 250, "res/textures/draw.png");
+                    allInterfaceObjects.push_back(new Image(0, 0, windowWidth, windowWidth, "res/textures/board.png"));
+                    generateCells(cells, allInterfaceObjects, whoseTurn);
+
                     waitCounter = 0;
                 }
             }
+            renderer.Clear();
+            rendererScene(allInterfaceObjects, renderer, shader, va, vb, layout, ib, window);
             /* Swap front and back buffers */
             GLCall(glfwSwapBuffers(window));
 
