@@ -10,6 +10,7 @@ public:
 		:GameObject(x, y, height, width, texturePath), isHovered(0), hoverTexture(new Texture(texturePath)) {};
 
 	virtual void onClick() {};
+
 	void ballCollisionEffect() {};
 	
 	void setIsHovered(bool isHovered)
