@@ -25,7 +25,6 @@ public:
 			return hoverTexture;
 	};
 protected:
-	//bool isVisible;
 	bool isHovered;
 	Texture* hoverTexture;
 };

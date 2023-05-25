@@ -18,6 +18,7 @@
 #include "GameObject.h"
 #include "Image.h"
 #include "InterfaceObject.h"
+#include "Cell.h"
 
 
 //transforms to range (-1,1)
@@ -100,11 +101,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
         void* userPointer = glfwGetWindowUserPointer(window);
         if (UserData* userData = static_cast<UserData*>(userPointer))
-        {
-            
+        {      
             for (int i = 0; i < userData->allInterfaceObjects->size(); i++)
             {
- 
                 if (xpos > (*userData->allInterfaceObjects)[i]->getX() && xpos < (*userData->allInterfaceObjects)[i]->getX() + (*userData->allInterfaceObjects)[i]->getWidth())
                 {
                     if (ypos > (*userData->allInterfaceObjects)[i]->getY() && ypos < (*userData->allInterfaceObjects)[i]->getY() + (*userData->allInterfaceObjects)[i]->getHeight())
@@ -112,8 +111,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                         (*userData->allInterfaceObjects)[i]->onClick();
                         break;
                     }
-                }
-                
+                }       
             }
             
         }
@@ -140,15 +138,13 @@ void hoverInterfaceObjects(int x, int y, std::vector<InterfaceObject*>& allInter
 int main(void)
 {
 
-    std::vector<InterfaceObject*> allInterfaceObjects;
-
     GLFWwindow* window;
 
     /* Initialize the library */
     if (!glfwInit())
         return -1;
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(windowWidth, windowHeight, "Arkanoid", NULL, NULL);
+    window = glfwCreateWindow(windowWidth, windowHeight, "Tic-Tac-Toe", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -196,6 +192,7 @@ int main(void)
 		shader.Bind();
 		shader.SetUniform1i("u_Texture", 1);
 
+        std::vector<InterfaceObject*> allInterfaceObjects;
 
         UserData userData(&allInterfaceObjects);
         
@@ -207,7 +204,27 @@ int main(void)
 
         double xpos, ypos;
 
+        Symbol whoseTurn = Symbol::Cross;
 
+        std::vector<Cell*> cells;
+
+        for(int i = 0; i < 3; i++)
+        {
+            cells.push_back(new Cell(0, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            cells.push_back(new Cell(windowWidth / 3, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            cells.push_back(new Cell(windowWidth * 2 / 3, i * windowHeight/3, windowWidth / 3, windowHeight / 3, whoseTurn));
+        }
+
+        for (int i = 0; i < 9; i++)
+        {
+            allInterfaceObjects.push_back(cells[i]);
+        }
  
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))

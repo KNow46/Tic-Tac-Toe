@@ -1,17 +1,24 @@
 #pragma once
+
 #include "InterfaceObject.h"
 #include "Texture.h"
+
+enum Symbol
+{
+	Circle,
+	Cross,
+	Empty
+};
+
 class Cell : public InterfaceObject
 {
 public:
-	Cell(int x, int y, int width, int height);
 
-	enum Symbol
-	{
-		Circle,
-		Cross,
-		Empty
-	};
+	void onClick();
+
+	Cell(int x, int y, int width, int height, Symbol& whoseTurn);
+	
+	virtual ~Cell();
 
 	void setSymbol(Symbol);
 
@@ -22,8 +29,9 @@ public:
 
 private:
 	Symbol symbol;
-	Texture* CircleTexture;
-	Texture* CrossTexture;
+	Symbol& whoseTurn;
+	Texture* circleTexture;
+	Texture* crossTexture;
 	
 };
 
